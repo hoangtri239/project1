@@ -12,7 +12,5 @@
 */
 
 Route::get('/', function () {	
-	$sql = DB::table('users')->get();
-	echo $sql;
     return view('welcome');
 });
