@@ -12,12 +12,19 @@
 ```
 
 ## List API
+
 #1 REGISTER:
+
     Method URL: /api/register
+    
     HTTP method: POST
+    
     Content types: application/x-www-form-urlencoded, application/json
+    
     Arguments: 
+    
         name (varchar, required), 
+        
         password (varchar, required), 
         email (varchar, required)
 
