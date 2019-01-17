@@ -23,12 +23,12 @@
     
     Arguments: 
     
-        name (varchar, required), 
-        
+        name (varchar, required),         
         password (varchar, required), 
         email (varchar, required)
 
 #2 LOGIN:
+
     Method URL: /api/login
     HTTP method: POST
     Content types: application/x-www-form-urlencoded, application/json
@@ -37,12 +37,16 @@
         password (varchar, required)
         
 #3 List Users:
+
+
     Method URL: /api/listUser
     HTTP method: GET
     Param: 
         key: token, value: {token response}
      
 #4 get User By Id:
+
+
     Method URL: /api/user/{id}
     HTTP method: GET
     Param: 
