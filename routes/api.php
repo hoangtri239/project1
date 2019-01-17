@@ -32,7 +32,7 @@ Route::post('/register', function (Request $request) {
 	$user = new App\User;
 	$user->name = $data['name'];
 	$user->email = $data['email'];
-	$user->password = $data['password'];
+	$user->password = md5($data['password']);
 	if(App\User::count() <= 1){
     	$user->role = "ADMIN";
     }
@@ -50,7 +50,7 @@ Route::post('/login', function (Request $request) {
 	if(!isset($data['email']) || !isset($data['password'])){
 		return json_encode($rs);
 	}
-	$user = App\User::where('email', $data['email'])->where('password', $data['password'])->first();
+	$user = App\User::where('email', $data['email'])->where('password', md5($data['password']))->first();
 	if(!$user){
 		$rs['messages'] = 'wrong information';
 	}else{
