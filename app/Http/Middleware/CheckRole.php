@@ -15,7 +15,10 @@ class CheckRole
      */
     public function handle($request, Closure $next)
     {
-        var_dump($request->get('api_token'));
+        $auth = $request->instance()->query('auth');
+        if($auth['role'] != "ADMIN"){
+            return response('No Permission', 401);
+        }
         return $next($request);
     }
 }

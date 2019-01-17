@@ -28,12 +28,15 @@ Route::post('/register', function (Request $request) {
     	$rs = $validator->errors();
     	return json_encode($rs);
     }
-
+    
 	$user = new App\User;
 	$user->name = $data['name'];
 	$user->email = $data['email'];
 	$user->password = $data['password'];
-	$user->generateToken();
+	if(App\User::count() <= 1){
+    	$user->role = "ADMIN";
+    }
+    $user->generateToken();
 	$user->save();
 	$rs['token'] = $user->api_token;
 	$rs['messages'] = 'success';
@@ -43,6 +46,7 @@ Route::post('/register', function (Request $request) {
 Route::post('/login', function (Request $request) {
 	$data = $request->all();
 	$rs['messages'] = 'failed';
+	$rs['user']	= null;
 	if(!isset($data['email']) || !isset($data['password'])){
 		return json_encode($rs);
 	}
@@ -56,18 +60,42 @@ Route::post('/login', function (Request $request) {
 		$rs['user']	= $user;
 	}
 	return json_encode($rs);
-});
+})->name('login');
 
-Route::middleware('role')->group(function () {
-    Route::get('/listUser', function () {	
-		$user = App\User::all();
-		if(!$user){
+Route::middleware('checkAuthToken')->group(function () { //required "token" parameter
+    Route::get('/listUser', function (Request $request) {	
+    	$auth = $request->instance()->query('auth');
+    	if($auth['role'] == 'ADMIN'){
+    		$users = App\User::all();	
+    	}else{
+    		$users = App\User::where('role', 'USER')->get()->limit(100);
+    	}		
+
+		if(!$users){
 			$rs['messages'] = 'no user found';
+			$rs['users'] = null;
 		}else{
-			$rs['list'] = $user;
+			$rs['messages'] = 'success';
+			$rs['users'] = $users;
 		}
 		return json_encode($rs);
-	});
+	}); //api get list Users
+
+	Route::get('/user/{id}', function ($id = 0, Request $request) {	
+		if(intval($id) > 0){
+	    	$user = App\User::where('id', $id)->select('id','name','email')->first();	    	
+			if(!$user){
+				$rs['messages'] = 'no user found';
+				$rs['user'] = null;
+			}else{
+				$rs['user'] = $user;
+			}
+			return json_encode($rs);
+		}else{
+			return response('No Id found', 404);
+		}
+    	
+	})->middleware('checkRole'); //api get user by id for admin
 });
 
 
